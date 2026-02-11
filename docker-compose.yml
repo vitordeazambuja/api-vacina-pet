@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: vacina_pets_api
+    volumes:
+      - ./backend:/app
+      - ./data:/app/db_data
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=django-insecure-dev-key-123
+      - DEBUG=True
