@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.utils import timezone
 from decimal import Decimal
 from usuarios.models import PerfilDono, PerfilFuncionario
 
@@ -23,6 +24,17 @@ class Pet(models.Model):
 
     def __str__(self):
         return f"{self.nome} ({self.dono.nome})"
+    
+    def calcular_idade_dias(self):
+        if not self.data_nascimento:
+            return None
+        return (timezone.now().date() - self.data_nascimento).days
+    
+    def calcular_idade_anos(self):
+        dias = self.calcular_idade_dias()
+        if dias is None:
+            return None
+        return dias // 365
 
 class Vacina(models.Model):
     nome = models.CharField(max_length=100)
