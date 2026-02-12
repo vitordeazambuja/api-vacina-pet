@@ -4,13 +4,10 @@ up:
 	docker-compose up -d
 
 down:
-	docker-compose down
+	docker-compose down -v
 
 build:
 	docker-compose up -d --build
-
-logs:
-	docker-compose logs -f
 
 migrate:
 	docker-compose exec api python manage.py makemigrations
