@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from datetime import date
+from datetime import date,timedelta
 from decimal import Decimal
 from usuarios.models import PerfilDono, PerfilFuncionario
 
@@ -111,3 +111,28 @@ class PetVacina(models.Model):
 
     def __str__(self):
         return f"{self.vacina.nome} -> {self.pet.nome}"
+    
+    def save(self, *args, **kwargs):
+        if not self.proxima_dose:
+            self.proxima_dose = self.data_aplicacao + timedelta(
+                days=self.vacina.intervalo_doses_dias
+            )
+        super().save(*args, **kwargs)
+
+    def esta_vencida(self):
+        if not self.proxima_dose:
+            return False
+        return self.proxima_dose < date.today()
+
+    def status(self):
+        hoje = date.today()
+        
+        if not self.proxima_dose:
+            return "indefinido"
+        
+        if self.proxima_dose < hoje:
+            return "vencida"
+        elif (self.proxima_dose - hoje).days <= 7:
+            return "proxima_em_breve"
+        else:
+            return "em_dia"
