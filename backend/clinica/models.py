@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+from datetime import date
 from decimal import Decimal
 from usuarios.models import PerfilDono, PerfilFuncionario
 
@@ -35,6 +36,35 @@ class Pet(models.Model):
         if dias is None:
             return None
         return dias // 365
+    
+    def listar_proximas_doses(self):
+        hoje = date.today()
+        proximas = []
+
+        for historico in self.historico_vacinas.all().order_by('-data_aplicacao'): # type: ignore
+            if historico.proxima_dose and historico.proxima_dose >= hoje:
+                proximas.append({
+                    'vacina': historico.vacina.nome,
+                    'data_proxima_dose': historico.proxima_dose,
+                    'dias_restantes': (historico.proxima_dose - hoje).days,
+                    'historico_id': historico.id
+                })
+        return proximas
+    
+    def listar_doses_vencidas(self):
+        hoje = date.today()
+        vencidas = []
+
+        for historico in self.historico_vacinas.all().order_by('-data_aplicacao'): # type: ignore
+            if historico.proxima_dose and historico.proxima_dose < hoje:
+                dias = (hoje - historico.proxima_dose).days
+                vencidas.append({
+                    'vacina': historico.vacina.nome,
+                    'data_proxima_dose': historico.proxima_dose,
+                    'dias_vencido': dias,
+                    'historico_id': historico.id
+                })
+        return vencidas
 
 class Vacina(models.Model):
     nome = models.CharField(max_length=100)
