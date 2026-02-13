@@ -24,10 +24,10 @@ class PetSerializer(serializers.ModelSerializer):
         return obj.calcular_idade_dias()
 
     def get_proximas_doses(self, obj):
-        return obj.listar_proximas_doses()
+        return obj.obter_proximas_doses()
 
     def get_doses_vencidas(self, obj):
-        return obj.listar_doses_vencidas()
+        return obj.obter_doses_vencidas()
 
 class VacinaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,15 +37,6 @@ class VacinaSerializer(serializers.ModelSerializer):
             'intervalo_doses_dias', 'descricao', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
-    
-    def create(self, validated_data):
-        request = self.context.get('request')
-
-        if not request or not request.user.is_staff:
-            raise serializers.ValidationError(
-                "Apenas funcionários podem cadastrar vacinas."
-            )
-        return super().create(validated_data)
 
 class PetVacinaSerializer(serializers.ModelSerializer):
     nome_vacina = serializers.CharField(source='vacina.nome', read_only=True)
@@ -69,12 +60,3 @@ class PetVacinaSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         return obj.get_status()
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-
-        if not request or not request.user.is_staff:
-            raise serializers.ValidationError(
-                "Apenas funcionários podem registrar aplicações de vacinas."
-            )
-        return super().create(validated_data)
