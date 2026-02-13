@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from datetime import date,timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 from usuarios.models import PerfilDono, PerfilFuncionario
 
@@ -37,32 +37,32 @@ class Pet(models.Model):
             return None
         return dias // 365
     
-    def listar_proximas_doses(self):
+    def obter_proximas_doses(self):
         hoje = date.today()
         proximas = []
-
-        for historico in self.historico_vacinas.all().order_by('-data_aplicacao'): # type: ignore
-            if historico.proxima_dose and historico.proxima_dose >= hoje:
+        
+        for registro in self.historico_vacinas.all().order_by('-data_aplicacao'): # type: ignore
+            if registro.proxima_dose and registro.proxima_dose >= hoje:
                 proximas.append({
-                    'vacina': historico.vacina.nome,
-                    'data_proxima_dose': historico.proxima_dose,
-                    'dias_restantes': (historico.proxima_dose - hoje).days,
-                    'historico_id': historico.id
+                    'vacina': registro.vacina.nome,
+                    'data_proxima_dose': registro.proxima_dose,
+                    'dias_restantes': (registro.proxima_dose - hoje).days,
+                    'historico_id': registro.id
                 })
         return proximas
     
-    def listar_doses_vencidas(self):
+    def obter_doses_vencidas(self):
         hoje = date.today()
         vencidas = []
-
-        for historico in self.historico_vacinas.all().order_by('-data_aplicacao'): # type: ignore
-            if historico.proxima_dose and historico.proxima_dose < hoje:
-                dias = (hoje - historico.proxima_dose).days
+        
+        for registro in self.historico_vacinas.all().order_by('-data_aplicacao'): # type: ignore
+            if registro.proxima_dose and registro.proxima_dose < hoje:
+                dias = (hoje - registro.proxima_dose).days
                 vencidas.append({
-                    'vacina': historico.vacina.nome,
-                    'data_proxima_dose': historico.proxima_dose,
+                    'vacina': registro.vacina.nome,
+                    'data_proxima_dose': registro.proxima_dose,
                     'dias_vencido': dias,
-                    'historico_id': historico.id
+                    'historico_id': registro.id
                 })
         return vencidas
 
@@ -124,7 +124,7 @@ class PetVacina(models.Model):
             return False
         return self.proxima_dose < date.today()
 
-    def status(self):
+    def get_status(self):
         hoje = date.today()
         
         if not self.proxima_dose:
