@@ -53,6 +53,10 @@ make migrate
 
 # Crie um superusuário (Opcional)
 make superuser
+
+
+# Encerra o container
+make down
 ```
 
 **Pronto!** A API estará rodando em `http://localhost:8000`
