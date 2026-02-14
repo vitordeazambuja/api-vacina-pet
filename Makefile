@@ -1,7 +1,11 @@
-.PHONY: up down build logs migrate superuser
+.PHONY: down build migrate superuser env
 
-up:
-	docker-compose up -d
+env:
+ifeq ($(OS),Windows_NT)
+	copy backend\.env.example backend\.env
+else
+	cp backend/.env.example backend/.env
+endif
 
 down:
 	docker-compose down -v
