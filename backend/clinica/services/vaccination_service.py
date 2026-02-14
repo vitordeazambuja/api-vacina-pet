@@ -103,7 +103,6 @@ class VaccineService:
         
         logger.info(f"Staff {user.username} criando nova vacina: {nome}")
         
-        # Validações
         if valor < 0:
             logger.error(f"Valor negativo para vacina {nome}")
             raise ValueError("Valor não pode ser negativo")
@@ -149,7 +148,6 @@ class VaccineService:
         
         logger.info(f"Staff {user.username} atualizando vacina {vaccine.nome}")
         
-        # Validações
         if 'valor' in kwargs and kwargs['valor'] < 0:
             logger.error(f"Valor negativo para vacina {vaccine_id}")
             raise ValueError("Valor não pode ser negativo")
@@ -289,7 +287,6 @@ class VaccinationService:
             f" pet={pet_id}, vaccine={vaccine_id}"
         )
         
-        # Validar referências
         pet = self.pet_repo.get_by_id(pet_id)
         if not pet:
             logger.error(f"Pet {pet_id} não encontrado")
@@ -306,12 +303,10 @@ class VaccinationService:
             logger.error(f"Funcionário {aplicador_id} não encontrado")
             raise ValueError(f"Funcionário {aplicador_id} não encontrado")
         
-        # Validar data
         if data_aplicacao > date.today():
             logger.error(f"Data de aplicação futura: {data_aplicacao}")
             raise ValueError("Data de aplicação não pode ser no futuro")
         
-        # Criar registro
         vaccination = self.vaccination_repo.create(
             pet=pet,
             vacina=vaccine,

@@ -5,24 +5,16 @@ Define valores mágicos e configurações reutilizáveis em todo o projeto.
 Seguindo princípio de Clean Code: DRY (Don't Repeat Yourself).
 """
 
-# ============================================================================
-# Constantes de Vacinação
-# ============================================================================
 class VACCINATION_CONSTANTS:
     """Constantes relacionadas a vacinação e doses."""
     
-    # Dias para próxima dose ser considerada "vencida"
     DAYS_UNTIL_OVERDUE = 0
     
-    # Dias para próxima dose ser considerada "próxima em breve"
     DAYS_WARNING_THRESHOLD = 7
     
-    # Dias para considerar animal como "em dia" com vacinação
     DAYS_UP_TO_DATE = 8
     
-    # Intervalo padrão anual em dias
     DEFAULT_ANNUAL_INTERVAL_DAYS = 365
-
 
 class VACCINATION_STATUS:
     """Valores de status de vacinação."""
@@ -39,21 +31,13 @@ class VACCINATION_STATUS:
         (UNDEFINED, "Indefinido"),
     ]
 
-
-# ============================================================================
-# Constantes de Usuários e Perfis
-# ============================================================================
 class USER_ROLES:
     """Papéis/funções de usuário no sistema."""
     
-    OWNER = "owner"  # Dono de pets
-    STAFF = "staff"  # Funcionário/Veterinário
-    ADMIN = "admin"  # Administrador
+    OWNER = "owner"
+    STAFF = "staff"
+    ADMIN = "admin"
 
-
-# ============================================================================
-# Constantes de Mensagens
-# ============================================================================
 class ERROR_MESSAGES:
     """Mensagens de erro padronizadas."""
     
@@ -75,10 +59,6 @@ class SUCCESS_MESSAGES:
     ITEM_UPDATED = "{model} atualizado com sucesso."
     ITEM_DELETED = "{model} deletado com sucesso."
 
-
-# ============================================================================
-# Constantes de Validação
-# ============================================================================
 class VALIDATION_CONSTRAINTS:
     """Restrições e limites para validação."""
     
@@ -91,20 +71,12 @@ class VALIDATION_CONSTRAINTS:
     MAX_USERNAME_LENGTH = 150
     MAX_NAME_LENGTH = 150
 
-
-# ============================================================================
-# Constantes de Paginação
-# ============================================================================
 class PAGINATION_CONSTANTS:
     """Constantes para paginação de APIs."""
     
     DEFAULT_PAGE_SIZE = 10
     MAX_PAGE_SIZE = 100
 
-
-# ============================================================================
-# Constantes de API
-# ============================================================================
 class API_TAGS:
     """Tags para documentação Swagger."""
     
@@ -117,10 +89,6 @@ class API_TAGS:
     USERS = "Usuários"
     PROFILES = "Perfis"
 
-
-# ============================================================================
-# Constantes de JWT
-# ============================================================================
 class JWT_CONSTANTS:
     """Constantes relacionadas a JWT."""
     

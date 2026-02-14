@@ -31,11 +31,9 @@ def custom_exception_handler(exc: Exception, context: Dict[str, Any]) -> Optiona
         Response com erro formatado ou None para deixar DRF tratar
     """
     
-    # Tratar exceções customizadas da aplicação
     if isinstance(exc, APIException):
         return handle_api_exception(exc)
     
-    # Tratar PermissionDenied do Django Core
     if isinstance(exc, DjangoPermissionDenied):
         return Response(
             {
@@ -45,18 +43,15 @@ def custom_exception_handler(exc: Exception, context: Dict[str, Any]) -> Optiona
             status=status.HTTP_403_FORBIDDEN
         )
     
-    # Deixar DRF tratar suas próprias exceções
     if isinstance(exc, DRFAPIException):
         return exception_handler(exc, context)
     
-    # Logar exceções não tratadas
     logger.error(
         f"Exceção não tratada: {type(exc).__name__}",
         exc_info=True,
         extra={"view": context.get("view"), "request": context.get("request")}
     )
     
-    # Retornar erro genérico em produção
     return Response(
         {
             "error": "Erro interno do servidor",
@@ -77,20 +72,16 @@ def handle_api_exception(exc: APIException) -> Response:
         Response formatada
     """
     
-    # Mapear status code da exceção para HTTP
     http_status = exc.status_code
     
-    # Construir corpo da resposta
     response_data = {
         "error": exc.__class__.__name__,
         "message": exc.message,
     }
     
-    # Adicionar detalhes se disponíveis
     if exc.detail:
         response_data["detail"] = exc.detail
     
-    # Logar erro conforme severidade
     if http_status >= 500:
         logger.error(f"Erro servidor: {exc.__class__.__name__} - {exc.message}")
     elif http_status >= 400:

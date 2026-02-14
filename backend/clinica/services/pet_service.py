@@ -118,12 +118,10 @@ class PetService:
         """
         logger.info(f"Criando novo pet: {nome} (usuário: {user.username})")
         
-        # Validar peso
         if peso < VALIDATION_CONSTRAINTS.MIN_PET_WEIGHT:
             logger.error(f"Peso inválido para pet {nome}: {peso}")
             raise ValueError(f"Peso mínimo é {VALIDATION_CONSTRAINTS.MIN_PET_WEIGHT}kg")
         
-        # Determinar dono
         if dono_id:
             if not user.is_staff:
                 dono = self._get_user_owner(user)
@@ -172,7 +170,6 @@ class PetService:
         """
         pet = self.get_pet_by_id(pet_id)
         
-        # Validar permissão
         if not user.is_staff:
             dono = self._get_user_owner(user)
             if pet.dono != dono:
@@ -181,7 +178,6 @@ class PetService:
                 )
                 raise OwnerAccessOnlyException(ERROR_MESSAGES.OWN_PETS_EDIT)
         
-        # Validar peso se fornecido
         if 'peso' in kwargs and kwargs['peso'] < VALIDATION_CONSTRAINTS.MIN_PET_WEIGHT:
             logger.error(f"Peso inválido ao atualizar pet {pet_id}")
             raise ValueError(f"Peso mínimo é {VALIDATION_CONSTRAINTS.MIN_PET_WEIGHT}kg")
@@ -204,7 +200,6 @@ class PetService:
         """
         pet = self.get_pet_by_id(pet_id)
         
-        # Validar permissão
         if not user.is_staff:
             dono = self._get_user_owner(user)
             if pet.dono != dono:

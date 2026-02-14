@@ -32,11 +32,6 @@ class APIException(Exception):
         self.detail = detail or {}
         super().__init__(self.message)
 
-
-# ============================================================================
-# Exceções de Autenticação e Autorização
-# ============================================================================
-
 class AuthenticationException(APIException):
     """Erro ao autenticar usuário."""
     
@@ -63,11 +58,6 @@ class OwnerAccessOnlyException(AuthorizationException):
     
     status_code = 403
     default_message = "Você pode apenas acessar seus próprios pets"
-
-
-# ============================================================================
-# Exceções de Recurso Não Encontrado
-# ============================================================================
 
 class ResourceNotFoundException(APIException):
     """Recurso solicitado não foi encontrado."""
@@ -96,11 +86,6 @@ class UserProfileNotFoundException(ResourceNotFoundException):
     status_code = 404
     default_message = "Perfil de usuário não encontrado"
 
-
-# ============================================================================
-# Exceções de Validação
-# ============================================================================
-
 class ValidationException(APIException):
     """Dados inválidos fornecidos."""
     
@@ -128,11 +113,6 @@ class DuplicateResourceException(ValidationException):
     status_code = 409
     default_message = "Recurso duplicado"
 
-
-# ============================================================================
-# Exceções de Operação de Negócio
-# ============================================================================
-
 class BusinessLogicException(APIException):
     """Violação de regra de negócio."""
     
@@ -145,11 +125,6 @@ class VaccinationLogicException(BusinessLogicException):
     
     status_code = 400
     default_message = "Erro ao processar vacinação"
-
-
-# ============================================================================
-# Exceções Internas
-# ============================================================================
 
 class InternalServerException(APIException):
     """Erro interno não tratado."""

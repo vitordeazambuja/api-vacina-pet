@@ -9,11 +9,9 @@ import logging.config
 from pathlib import Path
 from typing import Optional
 
-# Diretório de logs
 LOGS_DIR = Path(__file__).resolve().parent.parent.parent / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 
-# Configuração de logging
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -111,7 +109,6 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
-# Loggers específicos por domínio
 class DomainLoggers:
     """Loggers configurados para diferentes domínios."""
     
