@@ -4,4 +4,5 @@ djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
 drf-spectacular==0.26.5
 sqlparse==0.5.5
-dotenv
+django-cors-headers==4.x
+python-dotenv==1.x
