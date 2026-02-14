@@ -1,0 +1,966 @@
+{
+  "info": {
+    "_postman_id": "api-vacina-pet-collection",
+    "name": "API Vacina Pet",
+    "description": "Fluxo principal de requisições para a API de Gestão de Vacinação",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "1. Login - Obter Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"dono123\", \"password\": \"senha123\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/auth/token/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "auth", "token", ""]
+            },
+            "description": "Faz login e obtém o token JWT."
+          }
+        },
+        {
+          "name": "2. Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"refresh\": \"SEU_REFRESH_TOKEN_AQUI\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/auth/token/refresh/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "auth", "token", "refresh", ""]
+            },
+            "description": "Renova o access token usando o refresh token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "1. Criar - Usuário Dono",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"dono123\", \"email\": \"dono@example.com\", \"password\": \"senha123\", \"is_staff\": false}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/auth/usuarios/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "auth", "usuarios", ""]
+            },
+            "description": "Cria um novo usuário dono."
+          }
+        },
+        {
+          "name": "2. Criar - Usuário Funcionário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"funcionario123\", \"email\": \"funcionario@example.com\", \"password\": \"senha123\", \"is_staff\": true}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/auth/usuarios/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "auth", "usuarios", ""]
+            },
+            "description": "Cria um novo usuário funcionário."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Perfis",
+      "item": [
+        {
+          "name": "1. Criar - Perfil Dono",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": 1,\n  \"nome\": \"João Silva\",\n  \"cpf\": \"12345678900\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"telefone\": \"11987654321\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/auth/perfis-donos/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "auth", "perfis-donos", ""]
+            },
+            "description": "Cria um novo perfil dono."
+          }
+        },
+        {
+          "name": "2. Criar - Perfil Funcionário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": 2,\n  \"nome\": \"Maria Santos\",\n  \"cpf\": \"98765432100\",\n  \"endereco\": \"Av. Principal, 456\",\n  \"telefone\": \"11912345678\",\n  \"cargo\": \"Veterinário\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/auth/perfis-funcionarios/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "auth", "perfis-funcionarios", ""]
+            },
+            "description": "Cria um novo perfil funcionário."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pets",
+      "item": [
+        {
+          "name": "1. Listar Todos os Pets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pets/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pets", ""]
+            },
+            "description": "Lista todos os pets registrados"
+          }
+        },
+        {
+          "name": "2. Criar Novo Pet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"Rex\", \"especie\": \"Cachorro\", \"raca\": \"Labrador\", \"peso\": 25.5, \"data_nascimento\": \"2020-05-15\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pets/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pets", ""]
+            },
+            "description": "Cria um novo pet."
+          }
+        },
+        {
+          "name": "3. Obter Detalhes do Pet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pets/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pets", "1", ""]
+            },
+            "description": "Obtém detalhes de um pet específico"
+          }
+        },
+        {
+          "name": "4. Atualizar Pet",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"peso\": 26.0}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pets/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pets", "1", ""]
+            },
+            "description": "Atualiza informações de um pet"
+          }
+        },
+        {
+          "name": "5. Deletar Pet",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pets/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pets", "1", ""]
+            },
+            "description": "Deleta um pet"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vacinas",
+      "item": [
+        {
+          "name": "1. Listar Todas as Vacinas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/vacinas/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "vacinas", ""]
+            },
+            "description": "Lista todas as vacinas disponíveis no sistema"
+          }
+        },
+        {
+          "name": "2. Criar Nova Vacina",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"Raiva\", \"descricao\": \"Vacina contra raiva canina\", \"valor\": 85.00, \"fabricante\": \"Nobivac\", \"intervalo_doses_dias\": 365}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/vacinas/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "vacinas", ""]
+            },
+            "description": "Cria uma nova vacina no catálogo."
+          }
+        },
+        {
+          "name": "3. Obter Detalhes da Vacina",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/vacinas/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "vacinas", "1", ""]
+            },
+            "description": "Obtém detalhes de uma vacina específica"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Histórico de Vacinação",
+      "item": [
+        {
+          "name": "1. Listar Vacinações",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pet-vacinas/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pet-vacinas", ""]
+            },
+            "description": "Lista todas as vacinações registradas"
+          }
+        },
+        {
+          "name": "2. Registrar Vacinação",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"pet\": 1, \"vacina\": 1, \"data_aplicacao\": \"2026-02-14\", \"aplicador\": 1, \"lote\": \"LOTE-2026-001\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pet-vacinas/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pet-vacinas", ""]
+            },
+            "description": "Registra a aplicação de uma vacina em um pet. Requer aplicador e lote."
+          }
+        },
+        {
+          "name": "3. Obter Detalhes da Vacinação",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pet-vacinas/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pet-vacinas", "1", ""]
+            },
+            "description": "Obtém detalhes de uma vacinação específica"
+          }
+        },
+        {
+          "name": "4. Atualizar Vacinação",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"data_aplicacao\": \"2026-02-15\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pet-vacinas/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pet-vacinas", "1", ""]
+            },
+            "description": "Atualiza informações de uma vacinação"
+          }
+        },
+        {
+          "name": "5. Deletar Vacinação",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer ACCESS_TOKEN"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/api/v1/clinica/pet-vacinas/1/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "v1", "clinica", "pet-vacinas", "1", ""]
+            },
+            "description": "Deleta um registro de vacinação"
+          }
+        }
+      ]
+    },
+    {
+      "name": "FLUXO COMPLETO",
+      "item": [
+        {
+          "name": "PASSO 1: Criar Usuário Dono",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('user_dono_id', jsonData.id);",
+                  "    console.log('PASSO 1: Usuário dono criado com ID: ' + jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"dono123\", \"email\": \"dono@example.com\", \"password\": \"senha123\", \"is_staff\": false}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/usuarios/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "usuarios", ""]
+            },
+            "description": "PASSO 1: Cria um usuário dono. ID salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 2: Login Dono",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+                  "    console.log('PASSO 2: Token do dono salvo automaticamente');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"dono123\", \"password\": \"senha123\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/token/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "token", ""]
+            },
+            "description": "PASSO 2: Faz login como dono. Token salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 3: Criar Perfil Dono",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    console.log('PASSO 3: Perfil do dono criado com sucesso');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": {{user_dono_id}},\n  \"nome\": \"João Silva\",\n  \"cpf\": \"12345678900\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"telefone\": \"11987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/perfis-donos/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "perfis-donos", ""]
+            },
+            "description": "PASSO 3: Cria o perfil do dono usando o ID salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 4: Dono Cria Pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('pet_id', jsonData.id);",
+                  "    console.log('PASSO 4: Pet criado com ID: ' + jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"Bolinha\", \"especie\": \"Canino\", \"raca\": \"Poodle\", \"peso\": 5.5, \"data_nascimento\": \"2022-03-10\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/clinica/pets/",
+              "host": ["{{base_url}}"],
+              "path": ["clinica", "pets", ""]
+            },
+            "description": "PASSO 4: Dono cria um pet. ID salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 5: Criar Usuário Funcionário",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('user_funcionario_id', jsonData.id);",
+                  "    console.log('PASSO 5: Usuário funcionário criado com ID: ' + jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"funcionario123\", \"email\": \"funcionario@example.com\", \"password\": \"senha123\", \"is_staff\": true}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/usuarios/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "usuarios", ""]
+            },
+            "description": "PASSO 5: Cria um usuário funcionário. ID salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 6: Login Funcionário",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+                  "    console.log('PASSO 6: Token do funcionário salvo automaticamente');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"funcionario123\", \"password\": \"senha123\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/token/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "token", ""]
+            },
+            "description": "PASSO 6: Faz login como funcionário. Token salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 7: Criar Perfil Funcionário",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('perfil_funcionario_id', jsonData.id);",
+                  "    console.log('PASSO 7: Perfil do funcionário criado com ID: ' + jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": {{user_funcionario_id}},\n  \"nome\": \"Maria Santos\",\n  \"cpf\": \"98765432100\",\n  \"endereco\": \"Av. Principal, 456\",\n  \"telefone\": \"11912345678\",\n  \"cargo\": \"Veterinário\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/perfis-funcionarios/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "perfis-funcionarios", ""]
+            },
+            "description": "PASSO 7: Cria o perfil do funcionário e salva o ID do perfil."
+          }
+        },
+        {
+          "name": "PASSO 8: Funcionário Cria Vacina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('vaccine_id', jsonData.id);",
+                  "    console.log('PASSO 8: Vacina criada com ID: ' + jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\": \"Vacina Óctupla\", \"descricao\": \"Protege contra várias doenças\", \"valor\": 120.00, \"fabricante\": \"Nobivac\", \"intervalo_doses_dias\": 365}"
+            },
+            "url": {
+              "raw": "{{base_url}}/clinica/vacinas/",
+              "host": ["{{base_url}}"],
+              "path": ["clinica", "vacinas", ""]
+            },
+            "description": "PASSO 8: Funcionário cria uma vacina. ID salvo automaticamente."
+          }
+        },
+        {
+          "name": "PASSO 9: Funcionário Registra Vacinação",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('vaccination_id', jsonData.id);",
+                  "    console.log('PASSO 9: Vacinação registrada com ID: ' + jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"pet\": {{pet_id}}, \"vacina\": {{vaccine_id}}, \"data_aplicacao\": \"2026-02-14\", \"aplicador\": {{perfil_funcionario_id}}, \"lote\": \"LOTE-2026-001\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/clinica/pet-vacinas/",
+              "host": ["{{base_url}}"],
+              "path": ["clinica", "pet-vacinas", ""]
+            },
+            "description": "PASSO 9: Funcionário registra a vacinação usando o ID do perfil funcionário."
+          }
+        },
+        {
+          "name": "PASSO 10: Login Dono (Novamente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+                  "    console.log('PASSO 10: Token do dono salvo novamente');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"dono123\", \"password\": \"senha123\"}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/token/",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "token", ""]
+            },
+            "description": "PASSO 10: Dono faz login novamente para ver os detalhes do pet."
+          }
+        },
+        {
+          "name": "PASSO 11: Dono Vê Detalhes do Pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    console.log('PASSO 11: Fluxo completo finalizado - Detalhes do pet exibidos');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/clinica/pets/{{pet_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["clinica", "pets", "{{pet_id}}", ""]
+            },
+            "description": "PASSO 11: Dono vê os detalhes do pet com o histórico de vacinação completo."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_dono_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_funcionario_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "perfil_funcionario_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pet_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vaccine_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vaccination_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
