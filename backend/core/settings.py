@@ -155,4 +155,12 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Api Vacina Pet - Clínica Veterinária',
+    'DESCRIPTION': 'API completa para gerenciamento de clínicas veterinárias e vacinação de pets',
+    'VERSION': '1.0.0',
+    'POSTPROCESSING_HOOKS': ['core.schema_hooks.postprocessing_filter_spec'],
+    'SORT_OPERATIONS_BY_NAME': False,
+}
+
 AUTH_USER_MODEL = 'usuarios.Usuario'
