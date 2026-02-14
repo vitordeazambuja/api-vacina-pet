@@ -4,6 +4,7 @@ services:
     container_name: api-vacina-pet
     volumes:
       - ./backend:/app
+      - ./logs:/app/logs
       - ./data:/app/db_data
     ports:
       - "8000:8000"
