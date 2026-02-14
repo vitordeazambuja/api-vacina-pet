@@ -6,6 +6,25 @@ from decimal import Decimal
 from usuarios.models import PerfilDono, PerfilFuncionario
 
 class Pet(models.Model):
+    """
+    Modelo para registrar pets na clínica.
+    
+    Campos:
+    - dono: FK para PerfilDono (quem é dono)
+    - nome: Nome do pet
+    - especie: Ex: Cachorro, Gato
+    - raca: Raça/tipo do pet
+    - peso: Peso em kg (mínimo 0.01)
+    - data_nascimento: Data de nascimento (opcional)
+    - created_at: Data de registro
+    - updated_at: Data de última atualização
+    
+    Métodos:
+    - calcular_idade_dias(): Retorna idade em dias
+    - calcular_idade_anos(): Retorna idade em anos
+    - obter_proximas_doses(): Lista de próximas vacinas
+    - obter_doses_vencidas(): Lista de vacinas atrasadas
+    """
     dono = models.ForeignKey(
         PerfilDono, 
         on_delete=models.PROTECT, 
@@ -27,17 +46,20 @@ class Pet(models.Model):
         return f"{self.nome} ({self.dono.nome})"
     
     def calcular_idade_dias(self):
+        """Calcula idade em dias baseado na data de nascimento"""
         if not self.data_nascimento:
             return None
         return (timezone.now().date() - self.data_nascimento).days
     
     def calcular_idade_anos(self):
+        """Calcula idade em anos (divisão inteira de dias por 365)"""
         dias = self.calcular_idade_dias()
         if dias is None:
             return None
         return dias // 365
     
     def obter_proximas_doses(self):
+        """Retorna lista de próximas doses ainda não vencidas"""
         hoje = date.today()
         proximas = []
         
@@ -52,6 +74,7 @@ class Pet(models.Model):
         return proximas
     
     def obter_doses_vencidas(self):
+        """Retorna lista de doses em atraso"""
         hoje = date.today()
         vencidas = []
         
@@ -67,6 +90,21 @@ class Pet(models.Model):
         return vencidas
 
 class Vacina(models.Model):
+    """
+    Modelo para catálogo de vacinas disponíveis na clínica.
+    
+    Campos:
+    - nome: Nome da vacina (ex: Raiva, Polivalente)
+    - fabricante: Laboratório/fabricante
+    - valor: Preço em R$
+    - intervalo_doses_dias: Dias entre aplicações (ex: 365 para anual)
+    - descricao: Descrição detalhada da vacina
+    - created_at: Data de registro
+    - updated_at: Data de última atualização
+    
+    Relacionamentos:
+    - aplicacoes: Relacionamento reverso com PetVacina (múltiplas aplicações)
+    """
     nome = models.CharField(max_length=100)
     fabricante = models.CharField(max_length=100)
     valor = models.DecimalField(max_digits=8, decimal_places=2,validators=[MinValueValidator(Decimal('0.01'))]) 
@@ -83,6 +121,28 @@ class Vacina(models.Model):
         return self.nome
 
 class PetVacina(models.Model):
+    """
+    Modelo para registrar aplicações de vacinas em pets.
+    
+    Campos:
+    - pet: FK para Pet (qual pet foi vacinado)
+    - vacina: FK para Vacina (qual vacina foi aplicada)
+    - aplicador: FK para PerfilFuncionario (quem aplicou)
+    - data_aplicacao: Data que foi aplicada
+    - proxima_dose: Data da próxima dose (calculada automaticamente)
+    - lote: Lote/número do frasco
+    - observacoes: Anotações adicionais
+    - created_at: Data de registro
+    - updated_at: Data de última atualização
+    
+    Regra de Negócio:
+    - Próxima dose é calculada automaticamente = data_aplicacao + vacina.intervalo_doses_dias
+    - Status é definido automaticamente baseado nos dias para próxima dose
+    
+    Métodos:
+    - esta_vencida(): Verifica se passou da próxima dose
+    - get_status(): Retorna status (em_dia, proxima_em_breve, vencida, indefinido)
+    """
     pet = models.ForeignKey(
         Pet, 
         on_delete=models.PROTECT, 
@@ -113,6 +173,7 @@ class PetVacina(models.Model):
         return f"{self.vacina.nome} -> {self.pet.nome}"
     
     def save(self, *args, **kwargs):
+        """Calcula próxima dose automaticamente ao salvar"""
         if not self.proxima_dose:
             self.proxima_dose = self.data_aplicacao + timedelta(
                 days=self.vacina.intervalo_doses_dias
@@ -120,11 +181,21 @@ class PetVacina(models.Model):
         super().save(*args, **kwargs)
 
     def esta_vencida(self):
+        """Verifica se a próxima dose já passou de hoje"""
         if not self.proxima_dose:
             return False
         return self.proxima_dose < date.today()
 
     def get_status(self):
+        """
+        Retorna o status automático da vacinação.
+        
+        Retorna:
+        - 'em_dia': Próxima dose > 7 dias
+        - 'proxima_em_breve': Próxima dose em até 7 dias
+        - 'vencida': Próxima dose passou
+        - 'indefinido': Sem próxima dose definida
+        """
         hoje = date.today()
         
         if not self.proxima_dose:
