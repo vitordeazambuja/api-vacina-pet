@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from datetime import date
 
 from .models import Pet, Vacina, PetVacina
@@ -70,8 +71,147 @@ class PetViewSet(viewsets.ModelViewSet):
         except PerfilDono.DoesNotExist:
             raise PermissionDenied("Usuário não possui um perfil de dono.")
 
+    @extend_schema(
+        tags=['Pets'],
+        summary='Listar pets',
+        description='Lista todos os pets. Donos veem apenas seus pets, funcionários veem todos.',
+        parameters=[
+            OpenApiParameter(
+                name='dono_id',
+                type=int,
+                description='Filtrar pets por ID do dono (apenas para staff)',
+                required=False
+            )
+        ],
+        examples=[
+            OpenApiExample(
+                'Resposta - Sucesso',
+                value=[
+                    {
+                        'id': 1,
+                        'dono': 5,
+                        'nome_dono': 'João Silva',
+                        'nome': 'Rex',
+                        'especie': 'Cachorro',
+                        'raca': 'Labrador',
+                        'peso': '35.50',
+                        'data_nascimento': '2020-05-15',
+                        'idade_anos': 3,
+                        'idade_dias': 1370,
+                        'proximas_doses': [
+                            {
+                                'vacina': 'Raiva',
+                                'data_proxima_dose': '2025-03-15',
+                                'dias_restantes': 30
+                            }
+                        ],
+                        'doses_vencidas': []
+                    }
+                ]
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Pets'],
+        summary='Criar novo pet',
+        description='Cria um novo pet. Donos são automaticamente definidos. Funcionários podem registrar pets para outros donos.',
+        examples=[
+            OpenApiExample(
+                'Requisição - Dono criando seu pet',
+                value={
+                    'nome': 'Miau',
+                    'especie': 'Gato',
+                    'raca': 'Persa',
+                    'peso': '4.50',
+                    'data_nascimento': '2022-01-10'
+                }
+            ),
+            OpenApiExample(
+                'Resposta',
+                value={
+                    'id': 1,
+                    'dono': 5,
+                    'nome_dono': 'Maria Silva',
+                    'nome': 'Miau',
+                    'especie': 'Gato',
+                    'raca': 'Persa',
+                    'peso': '4.50',
+                    'data_nascimento': '2022-01-10',
+                    'idade_anos': 2,
+                    'idade_dias': 790,
+                    'created_at': '2025-02-13T10:30:45Z'
+                }
+            )
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Pets'],
+        summary='Obter detalhes do pet',
+        description='Retorna informações completas de um pet, incluindo histórico de vacinação'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Pets'],
+        summary='Atualizar pet',
+        description='Atualiza informações de um pet. Donos podem editar apenas seus pets, funcionários podem editar qualquer pet.'
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Pets'],
+        summary='Atualizar parcialmente um pet',
+        description='Atualiza apenas campos específicos de um pet (PATCH). Donos só podem editar seus pets.'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Pets'],
+        summary='Deletar pet',
+        description='Remove um pet do sistema. Donos podem deletar apenas seus pets, funcionários podem deletar qualquer pet.'
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Pets - Vacinação'],
+        summary='Histórico de vacinação',
+        description='Lista todas as vacinas aplicadas a um pet, com status e próximas doses',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value=[
+                    {
+                        'id': 1,
+                        'pet': 1,
+                        'nome_pet': 'Rex',
+                        'vacina': 10,
+                        'nome_vacina': 'Raiva',
+                        'aplicador': 3,
+                        'nome_aplicador': 'Dr. João',
+                        'data_aplicacao': '2025-01-15',
+                        'proxima_dose': '2026-01-15',
+                        'lote': 'RAIVA-2025-001',
+                        'observacoes': 'Sem reações',
+                        'esta_vencida': False,
+                        'status': 'em_dia'
+                    }
+                ]
+            )
+        ]
+    )
     @action(detail=True, methods=['get'])
     def historico_vacinas(self, request, pk=None):
+        """Retorna o histórico completo de vacinação do pet"""
         pet = self.get_object()
         self._validar_acesso_pet(request.user, pet)
         
@@ -79,8 +219,37 @@ class PetViewSet(viewsets.ModelViewSet):
         serializer = PetVacinaSerializer(historico, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        tags=['Pets - Vacinação'],
+        summary='Próximas doses agendadas',
+        description='Lista todas as próximas doses de vacina do pet com data e dias restantes',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value={
+                    'pet_id': 1,
+                    'pet_nome': 'Rex',
+                    'proximas_doses': [
+                        {
+                            'vacina': 'Raiva',
+                            'data_proxima_dose': '2025-03-15',
+                            'dias_restantes': 30,
+                            'historico_id': 1
+                        },
+                        {
+                            'vacina': 'Polivalente',
+                            'data_proxima_dose': '2025-04-20',
+                            'dias_restantes': 66,
+                            'historico_id': 2
+                        }
+                    ]
+                }
+            )
+        ]
+    )
     @action(detail=True, methods=['get'])
     def proximas_doses(self, request, pk=None):
+        """Retorna apenas as próximas doses não vencidas"""
         pet = self.get_object()
         self._validar_acesso_pet(request.user, pet)
         
@@ -91,8 +260,31 @@ class PetViewSet(viewsets.ModelViewSet):
             'proximas_doses': proximas
         })
 
+    @extend_schema(
+        tags=['Pets - Vacinação'],
+        summary='Doses de vacina vencidas',
+        description='Lista todas as doses em atraso que precisam ser aplicadas',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value={
+                    'pet_id': 1,
+                    'pet_nome': 'Zara',
+                    'doses_vencidas': [
+                        {
+                            'vacina': 'Polivalente',
+                            'data_proxima_dose': '2024-12-20',
+                            'dias_vencido': 85,
+                            'historico_id': 5
+                        }
+                    ]
+                }
+            )
+        ]
+    )
     @action(detail=True, methods=['get'])
     def doses_vencidas(self, request, pk=None):
+        """Retorna apenas as doses vencidas"""
         pet = self.get_object()
         self._validar_acesso_pet(request.user, pet)
         
@@ -131,6 +323,89 @@ class VacinaViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             raise PermissionDenied("Apenas funcionários podem realizar esta ação.")
 
+    @extend_schema(
+        tags=['Vacinas'],
+        summary='Listar vacinas disponíveis',
+        description='Lista todas as vacinas cadastradas no sistema. Apenas leitura para todos os usuários.',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value=[
+                    {
+                        'id': 1,
+                        'nome': 'Raiva',
+                        'fabricante': 'Boehringer Ingelheim',
+                        'valor': '85.00',
+                        'intervalo_doses_dias': 365,
+                        'descricao': 'Vacina contra raiva. Recomendada anualmente.'
+                    },
+                    {
+                        'id': 2,
+                        'nome': 'Polivalente',
+                        'fabricante': 'Intervet',
+                        'valor': '120.00',
+                        'intervalo_doses_dias': 365,
+                        'descricao': 'Vacina polivalente para cães. Protege contra múltiplas doenças.'
+                    }
+                ]
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Vacinas'],
+        summary='Criar nova vacina',
+        description='Cria uma nova vacina no sistema. Apenas funcionários podem realizar esta ação.',
+        examples=[
+            OpenApiExample(
+                'Requisição',
+                value={
+                    'nome': 'Raiva',
+                    'fabricante': 'Boehringer Ingelheim',
+                    'valor': '85.00',
+                    'intervalo_doses_dias': 365,
+                    'descricao': 'Vacina contra raiva. Recomendada anualmente para cães e gatos.'
+                }
+            )
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Vacinas'],
+        summary='Obter detalhes da vacina',
+        description='Retorna informações completas de uma vacina cadastrada'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Vacinas'],
+        summary='Atualizar vacina',
+        description='Atualiza informações de uma vacina. Apenas funcionários podem modificar vacinas.'
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Vacinas'],
+        summary='Atualizar parcialmente uma vacina',
+        description='Atualiza apenas campos específicos de uma vacina (PATCH). Apenas funcionários.'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Vacinas'],
+        summary='Deletar vacina',
+        description='Remove uma vacina do sistema. Apenas funcionários podem deletar vacinas.'
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 
 class PetVacinaViewSet(viewsets.ModelViewSet):
     serializer_class = PetVacinaSerializer
@@ -164,8 +439,142 @@ class PetVacinaViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             raise PermissionDenied("Apenas funcionários podem realizar esta ação.")
 
+    @extend_schema(
+        tags=['Histórico de Vacinação'],
+        summary='Listar registros de vacinação',
+        description='Lista todos os registros de vacinação. Donos veem apenas seus pets, funcionários veem todos.',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value=[
+                    {
+                        'id': 1,
+                        'pet': 1,
+                        'nome_pet': 'Rex',
+                        'vacina': 10,
+                        'nome_vacina': 'Raiva',
+                        'aplicador': 3,
+                        'nome_aplicador': 'Dr. João Santos',
+                        'data_aplicacao': '2025-01-15',
+                        'proxima_dose': '2026-01-15',
+                        'lote': 'RAIVA-2025-001',
+                        'observacoes': 'Sem reações adversas',
+                        'esta_vencida': False,
+                        'status': 'em_dia'
+                    }
+                ]
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Histórico de Vacinação'],
+        summary='Registrar vacinação',
+        description='''Registra uma nova aplicação de vacina. Apenas funcionários podem registrar.
+        A próxima dose é calculada automaticamente baseada no intervalo definido para a vacina.
+        Status automático: "em_dia" (padrão), "próxima_em_breve" (até 7 dias), "vencida" (ultrapassou data).''',
+        examples=[
+            OpenApiExample(
+                'Requisição',
+                value={
+                    'pet': 1,
+                    'vacina': 10,
+                    'aplicador': 3,
+                    'data_aplicacao': '2025-02-13',
+                    'lote': 'RAIVA-2025-001',
+                    'observacoes': 'Animal com boa saúde, sem reações'
+                }
+            ),
+            OpenApiExample(
+                'Resposta',
+                value={
+                    'id': 1,
+                    'pet': 1,
+                    'nome_pet': 'Rex',
+                    'vacina': 10,
+                    'nome_vacina': 'Raiva',
+                    'aplicador': 3,
+                    'nome_aplicador': 'Dr. João',
+                    'data_aplicacao': '2025-02-13',
+                    'proxima_dose': '2026-02-13',
+                    'lote': 'RAIVA-2025-001',
+                    'observacoes': 'Animal com boa saúde, sem reações',
+                    'status': 'em_dia'
+                }
+            )
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Histórico de Vacinação'],
+        summary='Obter detalhes da vacinação',
+        description='Retorna informações completas de um registro de vacinação'
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Histórico de Vacinação'],
+        summary='Atualizar registro de vacinação',
+        description='Atualiza informações de um registro de vacinação. Apenas funcionários podem modificar.'
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Histórico de Vacinação'],
+        summary='Atualizar parcialmente um registro',
+        description='Atualiza apenas campos específicos de um registro de vacinação (PATCH). Apenas funcionários.'
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Histórico de Vacinação'],
+        summary='Deletar registro de vacinação',
+        description='Remove um registro de vacinação do sistema. Apenas funcionários podem deletar.'
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        tags=['Relatórios - Staff'],
+        summary='Próximas doses do sistema',
+        description='Listagem de todas as próximas doses agendadas para todos os pets no sistema. Apenas funcionários.',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value={
+                    'total': 5,
+                    'proximas_doses': [
+                        {
+                            'pet_id': 1,
+                            'pet_nome': 'Rex',
+                            'dono': 'João Silva',
+                            'vacina': 'Raiva',
+                            'proxima_dose': '2025-03-15',
+                            'dias_restantes': 30
+                        },
+                        {
+                            'pet_id': 2,
+                            'pet_nome': 'Miau',
+                            'dono': 'Maria Santos',
+                            'vacina': 'Polivalente',
+                            'proxima_dose': '2025-03-20',
+                            'dias_restantes': 35
+                        }
+                    ]
+                }
+            )
+        ]
+    )
     @action(detail=False, methods=['get'])
     def proximas_doses_sistema(self, request):
+        """Relatório administrativo de próximas doses"""
         self._validar_staff()
         
         proximas = []
@@ -188,8 +597,32 @@ class PetVacinaViewSet(viewsets.ModelViewSet):
             'proximas_doses': proximas
         })
 
+    @extend_schema(
+        tags=['Relatórios - Staff'],
+        summary='Doses vencidas do sistema',
+        description='Listagem de todas as doses em atraso que precisam de nova aplicação. Apenas funcionários.',
+        examples=[
+            OpenApiExample(
+                'Resposta',
+                value={
+                    'total': 2,
+                    'doses_vencidas': [
+                        {
+                            'pet_id': 3,
+                            'pet_nome': 'Zara',
+                            'dono': 'Pedro Costa',
+                            'vacina': 'Polivalente',
+                            'proxima_dose_era': '2024-12-20',
+                            'dias_vencido': 85
+                        }
+                    ]
+                }
+            )
+        ]
+    )
     @action(detail=False, methods=['get'])
     def doses_vencidas_sistema(self, request):
+        """Relatório administrativo de doses vencidas"""
         self._validar_staff()
         
         vencidas = []

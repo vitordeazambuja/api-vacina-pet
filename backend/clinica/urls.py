@@ -5,7 +5,7 @@ from .views import PetViewSet, VacinaViewSet, PetVacinaViewSet
 router = DefaultRouter()
 router.register(r'pets', PetViewSet, basename='pet')
 router.register(r'vacinas', VacinaViewSet, basename='vacina')
-router.register(r'aplicacoes', PetVacinaViewSet, basename='petvacina')
+router.register(r'pet-vacinas', PetVacinaViewSet, basename='petvacina')
 
 urlpatterns = [
     path('', include(router.urls)),
